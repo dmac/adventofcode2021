@@ -2,7 +2,7 @@ const std = @import("std");
 
 pub fn main() !void {
     var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
-    const allocator = &arena.allocator;
+    const allocator = arena.allocator();
 
     const f = try std.fs.cwd().openFile("03.txt", .{});
     defer f.close();
@@ -14,12 +14,12 @@ pub fn main() !void {
     var o2Candidates = std.ArrayList(u32).init(allocator);
     var co2Candidates = std.ArrayList(u32).init(allocator);
 
-    const reader = std.io.bufferedReader(f.reader()).reader();
+    var buf_reader = std.io.bufferedReader(f.reader());
     var buf: [32]u8 = undefined;
-    while (try reader.readUntilDelimiterOrEof(buf[0..], '\n')) |line| {
+    while (try buf_reader.reader().readUntilDelimiterOrEof(buf[0..], '\n')) |line| {
         len = line.len;
         var val: u32 = 0;
-        for (line) |c, i| {
+        for (line, 0..) |c, i| {
             if (c == '0') {
                 zeroes[i] += 1;
             } else {

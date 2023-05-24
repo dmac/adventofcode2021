@@ -3,16 +3,16 @@ const std = @import("std");
 pub fn main() !void {
     var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
     defer arena.deinit();
-    const allocator = &arena.allocator;
+    const allocator = arena.allocator();
 
     const f = try std.fs.cwd().openFile("01.txt", .{});
     defer f.close();
 
     var depths = std.ArrayList(i32).init(allocator);
 
-    const reader = std.io.bufferedReader(f.reader()).reader();
+    var buf_reader = std.io.bufferedReader(f.reader());
     var buf: [32]u8 = undefined;
-    while (try reader.readUntilDelimiterOrEof(buf[0..], '\n')) |line| {
+    while (try buf_reader.reader().readUntilDelimiterOrEof(buf[0..], '\n')) |line| {
         const depth = try std.fmt.parseInt(i32, line, 10);
         try depths.append(depth);
     }

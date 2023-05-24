@@ -9,9 +9,9 @@ pub fn main() !void {
     var depth2: i32 = 0;
     var aim: i32 = 0;
 
-    const reader = std.io.bufferedReader(f.reader()).reader();
+    var buf_reader = std.io.bufferedReader(f.reader());
     var buf: [32]u8 = undefined;
-    while (try reader.readUntilDelimiterOrEof(buf[0..], '\n')) |line| {
+    while (try buf_reader.reader().readUntilDelimiterOrEof(buf[0..], '\n')) |line| {
         const dir = std.mem.sliceTo(line, ' ');
         const n = try std.fmt.parseInt(i32, line[dir.len + 1 ..], 10);
         if (std.mem.eql(u8, dir, "forward")) {
